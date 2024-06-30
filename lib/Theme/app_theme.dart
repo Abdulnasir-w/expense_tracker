@@ -25,24 +25,10 @@ class AppTheme {
           color: AppColors.textColor,
           fontFamily: 'Roboto',
         ),
-        bodyMedium: TextStyle(
-          color: AppColors.textColor,
-          fontFamily: "Roboto",
-        ),
-        displayLarge: TextStyle(
-          color: AppColors.textColor,
-          fontFamily: "Roboto",
-          fontWeight: FontWeight.bold,
-        ),
-        displayMedium: TextStyle(
-          color: AppColors.textColor,
-          fontFamily: "Roboto",
-          fontWeight: FontWeight.bold,
-        ),
-        labelLarge: TextStyle(
+        labelMedium: TextStyle(
           color: AppColors.surfaceColor,
           fontFamily: "Roboto",
-          fontWeight: FontWeight.bold,
+          fontSize: 18,
         ),
       ),
       buttonTheme: const ButtonThemeData(
