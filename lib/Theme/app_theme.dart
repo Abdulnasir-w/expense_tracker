@@ -12,7 +12,7 @@ class AppTheme {
         onSecondary: AppColors.secondaryColor,
         onSurface: AppColors.textColor,
       ),
-      scaffoldBackgroundColor: AppColors.backgroundColor,
+      scaffoldBackgroundColor: AppColors.surfaceColor,
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.primaryColor,
       ),
@@ -28,6 +28,7 @@ class AppTheme {
         labelMedium: TextStyle(
           color: AppColors.surfaceColor,
           fontFamily: "Roboto",
+          fontWeight: FontWeight.w500,
           fontSize: 18,
         ),
       ),
