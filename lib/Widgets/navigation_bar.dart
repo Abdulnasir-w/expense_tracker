@@ -23,8 +23,10 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     return AnimatedBottomNavigationBar(
       icons: iconList,
       activeIndex: _currrentIndex,
+      activeColor: Theme.of(context).colorScheme.primary,
       gapLocation: GapLocation.center,
       notchSmoothness: NotchSmoothness.defaultEdge,
+      iconSize: 25,
       onTap: (index) {
         setState(() {
           _currrentIndex = index;
