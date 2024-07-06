@@ -12,19 +12,13 @@ class HomeScreen extends StatelessWidget {
       appBar: const CustomAppBar(
         title: 'Expense',
       ),
-      body: const Column(),
-      floatingActionButton: FloatingActionButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(38)),
-        onPressed: () {},
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        child: Icon(
-          Icons.add,
-          size: 35,
-          color: Theme.of(context).colorScheme.surface,
-        ),
+      body: const Column(
+        children: [
+          Center(
+            child: Text("HOme"),
+          )
+        ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: const CustomBottomNavigationBar(),
     );
   }
 }
