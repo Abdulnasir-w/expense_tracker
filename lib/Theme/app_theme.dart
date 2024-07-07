@@ -8,8 +8,6 @@ class AppTheme {
         primary: AppColors.primaryColor,
         secondary: AppColors.secondaryColor,
         surface: AppColors.surfaceColor,
-        onPrimary: AppColors.surfaceColor,
-        onSecondary: AppColors.secondaryColor,
         onSurface: AppColors.textColor,
       ),
       scaffoldBackgroundColor: AppColors.surfaceColor,
