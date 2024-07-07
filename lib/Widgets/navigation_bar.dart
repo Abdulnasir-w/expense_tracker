@@ -13,9 +13,12 @@ class CustomBottomNavigationBar extends StatefulWidget {
       _CustomBottomNavigationBarState();
 }
 
-class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
+class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
+    with SingleTickerProviderStateMixin {
   final PageController _pageController = PageController(initialPage: 0);
   late int _selectedIndex = 0;
+  bool isOpen = false;
+  late AnimationController _animationController;
   final iconList = [
     const BottomNavigationBarItem(
         icon: Icon(FluentIcons.home_24_regular), label: ""),
@@ -26,6 +29,33 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     const BottomNavigationBarItem(
         icon: Icon(FluentIcons.production_24_filled), label: ""),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 50),
+    );
+  }
+
+  void _toggleMenu() {
+    setState(() {
+      isOpen = !isOpen;
+      if (isOpen) {
+        _animationController.forward();
+      } else {
+        _animationController.reverse();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _animationController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,19 +68,45 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           Fourth(),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(38)),
-        onPressed: () {},
-        materialTapTargetSize: MaterialTapTargetSize.padded,
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        child: Icon(
-          FluentIcons.add_24_regular,
-          color: Theme.of(context).colorScheme.surface,
-        ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Stack(
+        // mainAxisSize: MainAxisSize.min,
+        alignment: Alignment.bottomCenter,
+        clipBehavior: Clip.none,
+        children: [
+          if (isOpen) ...[
+            Positioned(
+              bottom: 70,
+              child: _buildFabMenuItem(FluentIcons.send_24_regular, () {}),
+            ),
+            Positioned(
+              bottom: 130,
+              child: _buildFabMenuItem(FluentIcons.drop_24_regular, () {}),
+            ),
+            Positioned(
+              bottom: 190,
+              child: _buildFabMenuItem(
+                FluentIcons.delete_24_regular,
+                () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Fourth()));
+                },
+              ),
+            ),
+          ],
+          FloatingActionButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(38)),
+              onPressed: _toggleMenu,
+              materialTapTargetSize: MaterialTapTargetSize.padded,
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              child: AnimatedIcon(
+                  icon: AnimatedIcons.menu_close,
+                  progress: _animationController)),
+        ],
       ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         padding: const EdgeInsets.only(top: 10),
@@ -79,6 +135,20 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildFabMenuItem(IconData icon, final VoidCallback onTap) {
+    return ScaleTransition(
+      scale: CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOut,
+      ),
+      child: FloatingActionButton(
+        onPressed: onTap,
+        mini: true,
+        child: Icon(icon),
       ),
     );
   }
