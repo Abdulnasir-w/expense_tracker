@@ -4,6 +4,7 @@ import 'package:expense_tracker/Screens/third.dart';
 import 'package:expense_tracker/Screens/transiction.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   const CustomBottomNavigationBar({super.key});
@@ -35,7 +36,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 50),
+      duration: const Duration(milliseconds: 100),
     );
   }
 
@@ -61,6 +62,11 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
     return Scaffold(
       body: PageView(
         controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
         children: const [
           HomeScreen(),
           Transiction(),
@@ -75,23 +81,19 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
         clipBehavior: Clip.none,
         children: [
           if (isOpen) ...[
-            Positioned(
+            const Positioned(
               bottom: 70,
-              child: _buildFabMenuItem(FluentIcons.send_24_regular, () {}),
+              child: const Icon(
+                FluentIcons.send_24_regular,
+              ),
             ),
             Positioned(
               bottom: 130,
-              child: _buildFabMenuItem(FluentIcons.drop_24_regular, () {}),
+              child: Icon(FluentIcons.drop_24_regular),
             ),
-            Positioned(
+            const Positioned(
               bottom: 190,
-              child: _buildFabMenuItem(
-                FluentIcons.delete_24_regular,
-                () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Fourth()));
-                },
-              ),
+              child: Icon(FluentIcons.delete_24_regular),
             ),
           ],
           FloatingActionButton(
@@ -139,17 +141,17 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
     );
   }
 
-  Widget _buildFabMenuItem(IconData icon, final VoidCallback onTap) {
-    return ScaleTransition(
-      scale: CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOut,
-      ),
-      child: FloatingActionButton(
-        onPressed: onTap,
-        mini: true,
-        child: Icon(icon),
-      ),
-    );
-  }
+  // _buildFabMenuItem(IconData icon, final VoidCallback onTap) {
+  //   return ScaleTransition(
+  //     scale: CurvedAnimation(
+  //       parent: _animationController,
+  //       curve: Curves.easeOut,
+  //     ),
+  //     child: FloatingActionButton(
+  //       onPressed: onTap,
+  //       mini: true,
+  //       child: Icon(icon),
+  //     ),
+  //   );
+  // }
 }
