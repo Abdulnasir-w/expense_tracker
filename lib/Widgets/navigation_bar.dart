@@ -84,10 +84,10 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Container(
-        child: Stack(
-          // mainAxisSize: MainAxisSize.min,
-          alignment: Alignment.bottomCenter,
-          clipBehavior: Clip.none,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          // alignment: Alignment.bottomCenter,
+          // clipBehavior: Clip.none,
           children: [
             if (isOpen) ...[
               Positioned(
