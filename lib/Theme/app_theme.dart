@@ -14,9 +14,6 @@ class AppTheme {
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.primaryColor,
       ),
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: AppColors.secondaryColor,
-      ),
       cardColor: AppColors.surfaceColor,
       textTheme: const TextTheme(
         bodyLarge: TextStyle(

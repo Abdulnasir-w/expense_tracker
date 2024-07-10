@@ -2,6 +2,7 @@ import 'package:expense_tracker/Screens/fourth.dart';
 import 'package:expense_tracker/Screens/home_screen.dart';
 import 'package:expense_tracker/Screens/third.dart';
 import 'package:expense_tracker/Screens/transiction.dart';
+import 'package:expense_tracker/Utils/float_menu_icons.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -57,6 +58,13 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
     _animationController.dispose();
   }
 
+  void _navigateToScreen(BuildContext context, Widget screen) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => screen),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,38 +83,36 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Stack(
-        // mainAxisSize: MainAxisSize.min,
-        alignment: Alignment.bottomCenter,
-        clipBehavior: Clip.none,
-        children: [
-          if (isOpen) ...[
-            const Positioned(
-              bottom: 70,
-              child: const Icon(
-                FluentIcons.send_24_regular,
+      floatingActionButton: Container(
+        child: Stack(
+          // mainAxisSize: MainAxisSize.min,
+          alignment: Alignment.bottomCenter,
+          clipBehavior: Clip.none,
+          children: [
+            if (isOpen) ...[
+              Positioned(
+                bottom: 100,
+                child: _buildFabMenuItem(
+                  icon: Icons.add,
+                  onTap: () {
+                    print("Tapped");
+                    _navigateToScreen(context, Fourth());
+                  },
+                ),
               ),
-            ),
-            Positioned(
-              bottom: 130,
-              child: Icon(FluentIcons.drop_24_regular),
-            ),
-            const Positioned(
-              bottom: 190,
-              child: Icon(FluentIcons.delete_24_regular),
-            ),
+            ],
+            FloatingActionButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(38)),
+                onPressed: _toggleMenu,
+                materialTapTargetSize: MaterialTapTargetSize.padded,
+                clipBehavior: Clip.antiAliasWithSaveLayer,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                child: AnimatedIcon(
+                    icon: AnimatedIcons.menu_close,
+                    progress: _animationController)),
           ],
-          FloatingActionButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(38)),
-              onPressed: _toggleMenu,
-              materialTapTargetSize: MaterialTapTargetSize.padded,
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              child: AnimatedIcon(
-                  icon: AnimatedIcons.menu_close,
-                  progress: _animationController)),
-        ],
+        ),
       ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       bottomNavigationBar: BottomAppBar(
@@ -141,17 +147,21 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
     );
   }
 
-  // _buildFabMenuItem(IconData icon, final VoidCallback onTap) {
-  //   return ScaleTransition(
-  //     scale: CurvedAnimation(
-  //       parent: _animationController,
-  //       curve: Curves.easeOut,
-  //     ),
-  //     child: FloatingActionButton(
-  //       onPressed: onTap,
-  //       mini: true,
-  //       child: Icon(icon),
-  //     ),
-  //   );
-  // }
+  Widget _buildFabMenuItem(
+      {required IconData icon, required VoidCallback onTap}) {
+    return ScaleTransition(
+      scale: CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOut,
+      ),
+      child: FloatingActionButton(
+        onPressed: () {
+          print('FloatingActionButton tapped');
+          onTap();
+        },
+        mini: true,
+        child: Icon(icon),
+      ),
+    );
+  }
 }
