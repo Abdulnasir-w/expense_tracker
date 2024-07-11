@@ -1,9 +1,11 @@
+import 'package:circular_menu/circular_menu.dart';
 import 'package:expense_tracker/Screens/fourth.dart';
 import 'package:expense_tracker/Screens/home_screen.dart';
 import 'package:expense_tracker/Screens/third.dart';
 import 'package:expense_tracker/Screens/transiction.dart';
 import 'package:expense_tracker/Utils/float_menu_icons.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -19,8 +21,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
     with SingleTickerProviderStateMixin {
   final PageController _pageController = PageController(initialPage: 0);
   late int _selectedIndex = 0;
-  bool isOpen = false;
-  late AnimationController _animationController;
+
   final iconList = [
     const BottomNavigationBarItem(
         icon: Icon(FluentIcons.home_24_regular), label: ""),
@@ -32,30 +33,25 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
         icon: Icon(FluentIcons.production_24_filled), label: ""),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 100),
+  CircularMenuItem _circularMenuItem({
+    required IconData icon,
+    required Color color,
+    required Widget screen,
+  }) {
+    return CircularMenuItem(
+      iconSize: 24,
+      icon: icon,
+      color: color,
+      onTap: () {
+        _navigateToScreen(context, screen);
+      },
     );
-  }
-
-  void _toggleMenu() {
-    setState(() {
-      isOpen = !isOpen;
-      if (isOpen) {
-        _animationController.forward();
-      } else {
-        _animationController.reverse();
-      }
-    });
   }
 
   @override
   void dispose() {
     super.dispose();
-    _animationController.dispose();
+    _pageController.dispose();
   }
 
   void _navigateToScreen(BuildContext context, Widget screen) {
@@ -83,37 +79,47 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Container(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          // alignment: Alignment.bottomCenter,
-          // clipBehavior: Clip.none,
-          children: [
-            if (isOpen) ...[
-              Positioned(
-                bottom: 100,
-                child: _buildFabMenuItem(
-                  icon: Icons.add,
-                  onTap: () {
-                    print("Tapped");
-                    _navigateToScreen(context, Fourth());
-                  },
-                ),
-              ),
-            ],
-            FloatingActionButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(38)),
-                onPressed: _toggleMenu,
-                materialTapTargetSize: MaterialTapTargetSize.padded,
-                clipBehavior: Clip.antiAliasWithSaveLayer,
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                child: AnimatedIcon(
-                    icon: AnimatedIcons.menu_close,
-                    progress: _animationController)),
-          ],
-        ),
+      floatingActionButton: CircularMenu(
+        toggleButtonColor: Theme.of(context).colorScheme.primary,
+        toggleButtonMargin: 45,
+        toggleButtonSize: 30,
+        toggleButtonPadding: 7,
+        items: [
+          _circularMenuItem(
+              icon: Icons.add, color: Colors.green, screen: Fourth()),
+          _circularMenuItem(
+              icon: Icons.add, color: Colors.green, screen: Third())
+        ],
       ),
+      // Stack(
+      //   alignment: Alignment.bottomCenter,
+      //   clipBehavior: Clip.none,
+      //   children: [
+      //     if (isOpen)
+      //       Container(
+      //         child: Positioned(
+      //           bottom: 100,
+      //           child: _buildFabMenuItem(
+      //             icon: Icons.add,
+      //             onTap: () {
+      //               print("Tapped");
+      //               _navigateToScreen(context, Fourth());
+      //             },
+      //           ),
+      //         ),
+      //       ),
+      //     FloatingActionButton(
+      //         shape: RoundedRectangleBorder(
+      //             borderRadius: BorderRadius.circular(38)),
+      //         onPressed: _toggleMenu,
+      //         materialTapTargetSize: MaterialTapTargetSize.padded,
+      //         clipBehavior: Clip.antiAliasWithSaveLayer,
+      //         backgroundColor: Theme.of(context).colorScheme.primary,
+      //         child: AnimatedIcon(
+      //             icon: AnimatedIcons.menu_close,
+      //             progress: _animationController)),
+      //   ],
+      // ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
@@ -143,24 +149,6 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildFabMenuItem(
-      {required IconData icon, required VoidCallback onTap}) {
-    return ScaleTransition(
-      scale: CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOut,
-      ),
-      child: FloatingActionButton(
-        onPressed: () {
-          print('FloatingActionButton tapped');
-          onTap();
-        },
-        mini: true,
-        child: Icon(icon),
       ),
     );
   }
