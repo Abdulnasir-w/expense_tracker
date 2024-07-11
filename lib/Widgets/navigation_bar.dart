@@ -3,11 +3,8 @@ import 'package:expense_tracker/Screens/fourth.dart';
 import 'package:expense_tracker/Screens/home_screen.dart';
 import 'package:expense_tracker/Screens/third.dart';
 import 'package:expense_tracker/Screens/transiction.dart';
-import 'package:expense_tracker/Utils/float_menu_icons.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   const CustomBottomNavigationBar({super.key});
@@ -82,44 +79,17 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
       floatingActionButton: CircularMenu(
         toggleButtonColor: Theme.of(context).colorScheme.primary,
         toggleButtonMargin: 45,
-        toggleButtonSize: 30,
-        toggleButtonPadding: 7,
+        toggleButtonSize: 24,
+        toggleButtonPadding: 13,
+        startingAngleInRadian: 4.2,
+        endingAngleInRadian: 5.3,
         items: [
           _circularMenuItem(
-              icon: Icons.add, color: Colors.green, screen: Fourth()),
+              icon: Icons.add, color: Colors.green, screen: const Fourth()),
           _circularMenuItem(
-              icon: Icons.add, color: Colors.green, screen: Third())
+              icon: Icons.add, color: Colors.red, screen: const Third()),
         ],
       ),
-      // Stack(
-      //   alignment: Alignment.bottomCenter,
-      //   clipBehavior: Clip.none,
-      //   children: [
-      //     if (isOpen)
-      //       Container(
-      //         child: Positioned(
-      //           bottom: 100,
-      //           child: _buildFabMenuItem(
-      //             icon: Icons.add,
-      //             onTap: () {
-      //               print("Tapped");
-      //               _navigateToScreen(context, Fourth());
-      //             },
-      //           ),
-      //         ),
-      //       ),
-      //     FloatingActionButton(
-      //         shape: RoundedRectangleBorder(
-      //             borderRadius: BorderRadius.circular(38)),
-      //         onPressed: _toggleMenu,
-      //         materialTapTargetSize: MaterialTapTargetSize.padded,
-      //         clipBehavior: Clip.antiAliasWithSaveLayer,
-      //         backgroundColor: Theme.of(context).colorScheme.primary,
-      //         child: AnimatedIcon(
-      //             icon: AnimatedIcons.menu_close,
-      //             progress: _animationController)),
-      //   ],
-      // ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
