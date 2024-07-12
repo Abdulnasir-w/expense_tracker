@@ -1,6 +1,8 @@
 import 'package:circular_menu/circular_menu.dart';
+import 'package:expense_tracker/Screens/expense.dart';
 import 'package:expense_tracker/Screens/fourth.dart';
 import 'package:expense_tracker/Screens/home_screen.dart';
+import 'package:expense_tracker/Screens/income.dart';
 import 'package:expense_tracker/Screens/third.dart';
 import 'package:expense_tracker/Screens/transiction.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
@@ -39,6 +41,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
       iconSize: 24,
       icon: icon,
       color: color,
+      iconColor: Colors.white,
       onTap: () {
         _navigateToScreen(context, screen);
       },
@@ -85,9 +88,13 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
         endingAngleInRadian: 5.3,
         items: [
           _circularMenuItem(
-              icon: Icons.add, color: Colors.green, screen: const Fourth()),
+              icon: FluentIcons.arrow_down_24_regular,
+              color: Colors.green,
+              screen: const IncomeScreen()),
           _circularMenuItem(
-              icon: Icons.add, color: Colors.red, screen: const Third()),
+              icon: FluentIcons.arrow_up_24_regular,
+              color: Colors.red,
+              screen: const ExpenseScreen()),
         ],
       ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
