@@ -1,0 +1,11 @@
+# ============================================================
+# key.properties.template
+# Copy this file to android/key.properties and fill in values.
+# NEVER commit key.properties to Git — it is in .gitignore
+# ============================================================
+
+storePassword=YOUR_KEYSTORE_PASSWORD
+keyPassword=YOUR_KEY_PASSWORD
+keyAlias=expense_tracker
+storeFile=C:/Users/YourName/keystores/expense_tracker_release.jks
+
