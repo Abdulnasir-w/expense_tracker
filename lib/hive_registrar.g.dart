@@ -3,10 +3,18 @@
 // Check in to version control
 
 import 'package:hive_ce/hive.dart';
+import 'package:expense_tracker/features/accounts/data/models/account_model.dart';
+import 'package:expense_tracker/features/budgets/data/models/budget_model.dart';
+import 'package:expense_tracker/features/categories/data/models/category_model.dart';
+import 'package:expense_tracker/features/recurring/data/models/recurring_rule_model.dart';
 import 'package:expense_tracker/features/transactions/data/models/transaction_model.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
+    registerAdapter(AccountModelAdapter());
+    registerAdapter(BudgetModelAdapter());
+    registerAdapter(CategoryModelAdapter());
+    registerAdapter(RecurringRuleModelAdapter());
     registerAdapter(TransactionModelAdapter());
     registerAdapter(TransactionTypeHiveAdapter());
   }
@@ -14,6 +22,10 @@ extension HiveRegistrar on HiveInterface {
 
 extension IsolatedHiveRegistrar on IsolatedHiveInterface {
   void registerAdapters() {
+    registerAdapter(AccountModelAdapter());
+    registerAdapter(BudgetModelAdapter());
+    registerAdapter(CategoryModelAdapter());
+    registerAdapter(RecurringRuleModelAdapter());
     registerAdapter(TransactionModelAdapter());
     registerAdapter(TransactionTypeHiveAdapter());
   }

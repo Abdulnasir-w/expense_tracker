@@ -17,30 +17,57 @@ class TransactionModelAdapter extends TypeAdapter<TransactionModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return TransactionModel()
-      ..title = fields[0] as String
-      ..amount = (fields[1] as num).toDouble()
-      ..type = fields[2] as TransactionTypeHive
-      ..date = fields[3] as DateTime
-      ..category = fields[4] as String
-      ..note = fields[5] as String?;
+      ..id = fields[0] as String
+      ..type = fields[1] as TransactionTypeHive
+      ..amountMinor = (fields[2] as num).toInt()
+      ..currencyCode = fields[3] as String
+      ..categoryId = fields[4] as String
+      ..accountId = fields[5] as String
+      ..toAccountId = fields[6] as String?
+      ..date = fields[7] as DateTime
+      ..title = fields[8] as String
+      ..note = fields[9] as String?
+      ..exchangeRate = (fields[10] as num?)?.toDouble()
+      ..baseAmountMinor = (fields[11] as num?)?.toInt()
+      ..recurringRuleId = fields[12] as String?
+      ..createdAt = fields[13] as DateTime
+      ..updatedAt = fields[14] as DateTime;
   }
 
   @override
   void write(BinaryWriter writer, TransactionModel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(15)
       ..writeByte(0)
-      ..write(obj.title)
+      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.amount)
-      ..writeByte(2)
       ..write(obj.type)
+      ..writeByte(2)
+      ..write(obj.amountMinor)
       ..writeByte(3)
-      ..write(obj.date)
+      ..write(obj.currencyCode)
       ..writeByte(4)
-      ..write(obj.category)
+      ..write(obj.categoryId)
       ..writeByte(5)
-      ..write(obj.note);
+      ..write(obj.accountId)
+      ..writeByte(6)
+      ..write(obj.toAccountId)
+      ..writeByte(7)
+      ..write(obj.date)
+      ..writeByte(8)
+      ..write(obj.title)
+      ..writeByte(9)
+      ..write(obj.note)
+      ..writeByte(10)
+      ..write(obj.exchangeRate)
+      ..writeByte(11)
+      ..write(obj.baseAmountMinor)
+      ..writeByte(12)
+      ..write(obj.recurringRuleId)
+      ..writeByte(13)
+      ..write(obj.createdAt)
+      ..writeByte(14)
+      ..write(obj.updatedAt);
   }
 
   @override
@@ -65,6 +92,8 @@ class TransactionTypeHiveAdapter extends TypeAdapter<TransactionTypeHive> {
         return TransactionTypeHive.income;
       case 1:
         return TransactionTypeHive.expense;
+      case 2:
+        return TransactionTypeHive.transfer;
       default:
         return TransactionTypeHive.income;
     }
@@ -77,6 +106,8 @@ class TransactionTypeHiveAdapter extends TypeAdapter<TransactionTypeHive> {
         writer.writeByte(0);
       case TransactionTypeHive.expense:
         writer.writeByte(1);
+      case TransactionTypeHive.transfer:
+        writer.writeByte(2);
     }
   }
 

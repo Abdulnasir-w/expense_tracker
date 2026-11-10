@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Full-screen loading overlay.
-/// Wrap over any [child] widget to display a centered indicator.
 class LoadingOverlay extends StatelessWidget {
   final bool isLoading;
   final Widget child;
@@ -28,4 +26,3 @@ class LoadingOverlay extends StatelessWidget {
     );
   }
 }
-

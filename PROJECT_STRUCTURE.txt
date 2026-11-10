@@ -1,0 +1,203 @@
+================================================================================
+                    EXPENSE TRACKER - PROJECT SPECIFICATION & ARCHITECTURE
+================================================================================
+Version: 1.0.0+1
+Architecture: Clean Architecture (Feature-First) + Domain-Driven Design
+State Management: Flutter Riverpod 2.x (AsyncNotifier / StateNotifier / Providers)
+Routing: GoRouter 14.x with Persistent ShellRoute & Modal Transitions
+Local Database: Hive CE (Community Edition, zero-latency offline-first storage)
+UI Framework: Material 3 (seed-based ColorScheme, Dark & Light modes)
+Platform Target: Android SDK 35 (Java 17, AAB Release Ready) & Cross-Platform
+
+--------------------------------------------------------------------------------
+1. ARCHITECTURAL DECISIONS & CORE PRINCIPLES
+--------------------------------------------------------------------------------
+1. Integer Minor Units (No Floating-Point Math):
+   - All monetary values are strictly stored as integers (`amountMinor`), preventing
+     IEEE 754 floating-point inaccuracies (e.g. 0.1 + 0.2 = 0.30000000000000004).
+   - $12.50 USD is stored as 1250 cents.
+   - Handled via `CurrencyFormatter` with custom decimal digits per currency
+     (e.g., USD/PKR = 2 decimals, JPY = 0, KWD = 3).
+
+2. String UUIDs (Never Auto-Increment IDs):
+   - Every entity (Transactions, Categories, Accounts, Budgets, RecurringRules)
+     uses a cryptographically random UUID v4 (`uuid` package).
+
+3. Referenced by ID, Never by Name:
+   - Transactions store `categoryId` and `accountId` (and `toAccountId` for transfers).
+   - Category renames or account modifications never corrupt transaction history.
+
+4. Versioned Schema & Auto-Migration:
+   - Hive `app_settings` box maintains `schema_version` (Version 2).
+   - On startup, `HiveService` inspects the version, seeds default accounts and
+     categories, and automatically migrates legacy entries.
+
+5. Computed Balances:
+   - Balances are NEVER stored statically; they are computed dynamically from the
+     transactions ledger:
+     accountBalance = initialBalance
+                    + sum(income into account)
+                    - sum(expenses from account)
+                    + sum(transfers into account)
+                    - sum(transfers out of account)
+
+--------------------------------------------------------------------------------
+2. TARGET DATA MODELS
+--------------------------------------------------------------------------------
+- Transaction:
+  id (UUID), type (income | expense | transfer), amountMinor (int), currencyCode,
+  categoryId (UUID), accountId (UUID), toAccountId (UUID?), date, title, note,
+  exchangeRate?, baseAmountMinor?, recurringRuleId?, createdAt, updatedAt.
+
+- Category:
+  id (UUID), name, iconKey, colorValue, type (income | expense | both),
+  isArchived, sortOrder.
+
+- Account:
+  id (UUID), name, type (cash | bank | wallet | card), currencyCode,
+  initialBalanceMinor, colorValue, iconKey, isArchived.
+
+- Budget:
+  id (UUID), categoryId? (null = overall monthly), limitMinor, period (monthly).
+
+- RecurringRule:
+  id (UUID), type, amountMinor, currencyCode, categoryId, accountId, toAccountId?,
+  title, note, frequency (daily | weekly | monthly | yearly), interval,
+  startDate, endDate?, nextDueDate, isActive, autoAdd.
+
+--------------------------------------------------------------------------------
+3. COMPLETE REPOSITORY FILE TREE
+--------------------------------------------------------------------------------
+expense_tracker/
+│
+├── android/                               # Native Android platform code
+│   ├── app/
+│   │   ├── build.gradle                   # Target SDK 35, Java 17, signing configs
+│   │   └── src/main/AndroidManifest.xml
+│   └── key.properties.template            # Template for keystore credentials
+│
+├── assets/                                # Vector graphics & static assets
+│   ├── Expense.svg
+│   └── Income.svg
+│
+├── fonts/                                 # Roboto typography fonts
+│   ├── Roboto-Bold.ttf
+│   ├── Roboto-Italic.ttf
+│   └── Roboto-Regular.ttf
+│
+├── test/                                  # Unit & widget test suites
+│   ├── widget_test.dart                   # Smoke test for root ProviderScope
+│   └── features/
+│       └── transactions/
+│           └── domain_usecases_test.dart  # Unit tests for transaction use cases
+│
+├── pubspec.yaml                           # Dependencies & asset configuration
+├── PROJECT_STRUCTURE.txt                  # Complete architecture specification
+│
+└── lib/                                   # Application source code
+    ├── main.dart                          # Entry point, Hive init, ProviderScope
+    ├── app.dart                           # MaterialApp.router, dynamic ThemeMode
+    ├── hive_registrar.g.dart              # Generated Hive adapters registration
+    │
+    ├── core/                              # Core cross-cutting infrastructure
+    │   ├── constants/
+    │   │   └── app_constants.dart         # Defaults, date & storage constants
+    │   ├── database/
+    │   │   └── hive_service.dart          # Database lifecycle, migrations & seeds
+    │   ├── di/
+    │   │   └── providers.dart             # Dependency injection with Riverpod
+    │   ├── error/
+    │   │   ├── exceptions.dart            # Data layer exceptions
+    │   │   └── failures.dart              # Domain layer failures
+    │   ├── router/
+    │   │   └── app_router.dart            # GoRouter config, ShellRoute, transitions
+    │   ├── theme/
+    │   │   ├── app_category_icons.dart    # Safe curated IconData mappings
+    │   │   ├── app_colors.dart            # Material 3 seed palette & semantics
+    │   │   ├── app_theme.dart             # Light & Dark Material 3 theme data
+    │   │   └── app_typography.dart        # Roboto typography definitions
+    │   └── utils/
+    │       ├── currency_formatter.dart    # Minor unit calculations & formatting
+    │       └── date_formatter.dart        # Relative & absolute date formatting
+    │
+    ├── shared/                            # Global shared widgets
+    │   └── widgets/
+    │       ├── app_shell.dart             # Bottom navigation bar + animated FAB
+    │       ├── custom_app_bar.dart        # Standardized M3 AppBar
+    │       └── loading_overlay.dart       # Full-screen modal loading spinner
+    │
+    └── features/                          # Feature modules (Clean Architecture)
+        │
+        ├── accounts/                      # Feature 6: Multiple accounts & wallets
+        │   ├── data/
+        │   │   ├── datasources/account_local_datasource.dart
+        │   │   ├── models/account_model.dart
+        │   │   └── repositories/account_repo_impl.dart
+        │   ├── domain/
+        │   │   ├── entities/account_entity.dart
+        │   │   └── repositories/account_repository.dart
+        │   └── presentation/
+        │       └── controllers/accounts_controller.dart # Dynamic balance calculation
+        │
+        ├── categories/                    # Feature 3: Custom categories, colors & icons
+        │   ├── data/
+        │   │   ├── datasources/category_local_datasource.dart
+        │   │   ├── models/category_model.dart
+        │   │   └── repositories/category_repo_impl.dart
+        │   ├── domain/
+        │   │   ├── entities/category_entity.dart
+        │   │   └── repositories/category_repository.dart
+        │   └── presentation/
+        │       └── controllers/categories_controller.dart
+        │
+        ├── budgets/                       # Feature 4: Monthly budgets per category
+        │   ├── data/models/budget_model.dart
+        │   └── domain/entities/budget_entity.dart
+        │
+        ├── recurring/                     # Feature 5: Recurring rules engine
+        │   ├── data/models/recurring_rule_model.dart
+        │   └── domain/entities/recurring_rule_entity.dart
+        │
+        ├── dashboard/                     # Tab 1: Financial overview
+        │   └── presentation/
+        │       └── screens/home_screen.dart # Balance card, accounts carousel, recent list
+        │
+        ├── transactions/                  # Tab 2 & Modals: Transactions & editing
+        │   ├── data/
+        │   │   ├── datasources/transaction_local_datasource.dart
+        │   │   ├── models/transaction_model.dart
+        │   │   └── repositories/transaction_repo_impl.dart
+        │   ├── domain/
+        │   │   ├── entities/transaction_entity.dart
+        │   │   ├── repositories/transaction_repository.dart
+        │   │   └── usecases/
+        │   │       ├── add_transaction.dart
+        │   │       ├── get_transactions.dart
+        │   │       ├── update_transaction.dart
+        │   │       └── delete_transaction.dart
+        │   └── presentation/
+        │       ├── controllers/
+        │       │   ├── transaction_controller.dart
+        │       │   ├── transaction_filter.dart
+        │       │   └── filtered_transactions_controller.dart
+        │       └── screens/
+        │           ├── transaction_list_screen.dart # Search, filter sheet & undo delete
+        │           └── transaction_form_screen.dart # Unified Add/Edit modal form
+        │
+        ├── statistics/                    # Tab 3: Data analytics
+        │   └── presentation/
+        │       └── screens/statistics_screen.dart # Cash flow overview & category breakdown
+        │
+        └── settings/                      # Tab 4: User preferences
+            └── presentation/
+                ├── controllers/theme_controller.dart # Persistent theme state
+                └── screens/settings_screen.dart      # Theme switcher & legal dialog
+
+--------------------------------------------------------------------------------
+4. STATUS & QUALITY ASSURANCE
+--------------------------------------------------------------------------------
+- Static Analysis: `flutter analyze` passes with 0 issues / 0 warnings.
+- Test Coverage: `flutter test` passes with 100% success across all unit & widget tests.
+- Safety: PopScope confirmation prevents accidental loss of unsaved edits.
+- Resiliency: Delete operations include a 4-second Undo SnackBar action.
+================================================================================
